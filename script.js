@@ -714,11 +714,11 @@ function openProductModal(productId = null) {
         
         // Show existing image if available
         const imagePreview = document.getElementById('imagePreview');
-        if (product.image) {
-            imagePreview.innerHTML = `<img src="${product.image}" alt="تصویر محصول">`;
-        } else {
-            imagePreview.innerHTML = '';
-        }
+       if (product.image_url) {
+    imagePreview.innerHTML = `<img src="${product.image_url}" alt="تصویر محصول">`;
+} else {
+    imagePreview.innerHTML = '';
+}
     } else {
         form.reset();
         document.getElementById('imagePreview').innerHTML = '';
@@ -894,7 +894,7 @@ function renderProducts(filterCategoryId = null) {
         const card = document.createElement('div');
         card.className = 'product-card';
         
-        const imageSrc = product.image || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjVGMEU4Ii8+CjxwYXRoIGQ9Ik0xNTAgMTAwQzE1MCA4OS41IDE1OC41IDgxIDE2OSA4MUgxMzFDMTQxLjUgODEgMTUwIDg5LjUgMTUwIDEwMFoiIGZpbGw9IiM0QTdDNTkiLz4KPHBhdGggZD0iTTE1MCAxMDBDMTUwIDExMC41IDE0MS41IDExOSAxMzEgMTE5SDE2OUMxNTguNSAxMTkgMTUwIDExMC41IDE1MCAxMDBaIiBmaWxsPSIjMkQ1QTI3Ii8+Cjx0ZXh0IHg9IjE1MCIgeT0iMTMwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjNkM3NTdEIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiPuaXoOaXoOaXoOaXoDwvdGV4dD4KPC9zdmc+';
+        const imageSrc = product.image_url || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjVGMEU4Ii8+CjxwYXRoIGQ9Ik0xNTAgMTAwQzE1MCA4OS41IDE1OC41IDgxIDE2OSA4MUgxMzFDMTQxLjUgODEgMTUwIDg5LjUgMTUwIDEwMFoiIGZpbGw9IiM0QTdDNTkiLz4KPHBhdGggZD0iTTE1MCAxMDBDMTUwIDExMC41IDE0MS41IDExOSAxMzEgMTE5SDE2OUMxNTguNSAxMTkgMTUwIDExMC41IDE1MCAxMDBaIiBmaWxsPSIjMkQ1QTI3Ii8+Cjx0ZXh0IHg9IjE1MCIgeT0iMTMwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjNkM3NTdEIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiPuaXoOaXoOaXoOaXoDwvdGV4dD4KPC9zdmc+';
         
         const descriptionHtml = product.description ? `<p class="product-description">${product.description}</p>` : '';
         
@@ -922,10 +922,10 @@ function renderAdminProducts() {
         const item = document.createElement('div');
         item.className = 'item-card';
         
-        const imagePreview = product.image ? 
-            `<img src="${product.image}" alt="${product.name}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px; margin-left: 1rem;">` : 
-            '<div style="width: 50px; height: 50px; background: #e9ecef; border-radius: 8px; margin-left: 1rem; display: flex; align-items: center; justify-content: center;"><i class="fas fa-image" style="color: #6c757d;"></i></div>';
-        
+        const imagePreview = product.image_url ? 
+    `<img src="${product.image_url}" alt="${product.name}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px; margin-left: 1rem;">` : 
+    '<div style="width: 50px; height: 50px; background: #e9ecef; border-radius: 8px; margin-left: 1rem; display: flex; align-items: center; justify-content: center;"><i class="fas fa-image" style="color: #6c757d;"></i></div>';
+
         item.innerHTML = `
             <div class="item-info" style="display: flex; align-items: center;">
                 ${imagePreview}
