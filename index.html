@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منوی کافه - Cafe Menu</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lalezar&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Supabase SDK -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script>
+        // Supabase configuration
+        const SUPABASE_URL = 'https://csukmvlljqtlfabpjhhn.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNzdWttdmxsanF0bGZhYnBqaGhuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgzMzg1NTAsImV4cCI6MjA3MzkxNDU1MH0.rRxz9wJUbjm7u2zd4Lutktl38Ynrzs9JxBAyUFeVEzk';
+        
+        // Initialize Supabase
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        // Make Supabase available globally
+        window.supabaseClient = supabase;
+    </script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <h1 class="logo">
+                    <i class="fas fa-coffee"></i>
+                    کافه ماموت
+                </h1>
+                <p class="location">
+                    <i class="fas fa-map-marker-alt"></i>
+                    شهرک صنعتی، میدان اول
+                </p>
+            </div>
+        </div>
+        <button class="admin-btn" id="adminBtn" style="position: fixed; top: 10px; left: 10px; z-index: 9999; background: rgba(26, 61, 26, 0.9); color: white; border: 1px solid rgba(255, 255, 255, 0.3); padding: 0.4rem 0.6rem; border-radius: 15px; cursor: pointer; font-size: 0.7rem;">
+            <i class="fas fa-cog"></i>
+            <span>پنل مدیریت</span>
+        </button>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="container">
+            <!-- Category Filter -->
+            <div class="category-filter">
+                <button class="category-btn active" data-category="all">
+                    همه
+                </button>
+                <div id="categoryButtons"></div>
+            </div>
+
+            <!-- Products Grid -->
+            <div class="products-grid" id="productsGrid">
+                <!-- Products will be dynamically loaded here -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Admin Login Modal -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>ورود به پنل مدیریت</h2>
+                <button class="close-btn" id="closeLoginModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form class="login-form" id="loginForm">
+                <div class="form-group">
+                    <label for="password">رمز عبور:</label>
+                    <input type="password" id="password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">ورود</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Admin Panel Modal -->
+    <div class="modal" id="adminModal">
+        <div class="modal-content admin-panel">
+            <div class="modal-header">
+                <h2>پنل مدیریت</h2>
+                <button class="close-btn" id="closeAdminModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="admin-tabs">
+                <button class="tab-btn active" data-tab="categories">دسته‌بندی‌ها</button>
+                <button class="tab-btn" data-tab="products">محصولات</button>
+            </div>
+
+            <!-- Categories Tab -->
+            <div class="tab-content active" id="categoriesTab">
+                <div class="section-header">
+                    <h3>مدیریت دسته‌بندی‌ها</h3>
+                    <button class="btn btn-primary" id="addCategoryBtn">
+                        <i class="fas fa-plus"></i>
+                        افزودن دسته‌بندی
+                    </button>
+                </div>
+                <div class="items-list" id="categoriesList"></div>
+            </div>
+
+            <!-- Products Tab -->
+            <div class="tab-content" id="productsTab">
+                <div class="section-header">
+                    <h3>مدیریت محصولات</h3>
+                    <button class="btn btn-primary" id="addProductBtn">
+                        <i class="fas fa-plus"></i>
+                        افزودن محصول
+                    </button>
+                </div>
+                <div class="items-list" id="productsList"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Category Modal -->
+    <div class="modal" id="categoryModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="categoryModalTitle">افزودن دسته‌بندی</h2>
+                <button class="close-btn" id="closeCategoryModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form class="form" id="categoryForm">
+                <div class="form-group">
+                    <label for="categoryName">نام دسته‌بندی:</label>
+                    <input type="text" id="categoryName" required>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelCategoryBtn">انصراف</button>
+                    <button type="submit" class="btn btn-primary">ذخیره</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add/Edit Product Modal -->
+    <div class="modal" id="productModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="productModalTitle">افزودن محصول</h2>
+                <button class="close-btn" id="closeProductModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form class="form" id="productForm" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="productName">نام محصول:</label>
+                    <input type="text" id="productName" required>
+                </div>
+                <div class="form-group">
+                    <label for="productCategory">دسته‌بندی:</label>
+                    <select id="productCategory" required>
+                        <option value="">انتخاب دسته‌بندی</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="productPrice">قیمت (تومان):</label>
+                    <input type="number" id="productPrice" required min="0">
+                </div>
+                <div class="form-group">
+                    <label for="productDescription">توضیحات:</label>
+                    <textarea id="productDescription" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="productImage">عکس محصول:</label>
+                    <input type="file" id="productImage" accept="image/*">
+                    <div class="image-preview" id="imagePreview"></div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelProductBtn">انصراف</button>
+                    <button type="submit" class="btn btn-primary">ذخیره</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-left">
+                    <h3>کافه ماموت</h3>
+                    <p>بهترین تجربه قهوه در شهرک صنعتی</p>
+                </div>
+                <div class="footer-right">
+                    <div class="social-links">
+                        <a href="https://www.instagram.com/mammut_cafe/" target="_blank" class="social-link">
+                            <i class="fab fa-instagram"></i>
+                            <span>اینستاگرام</span>
+                        </a>
+                        <a href="tel:" class="social-link">
+                            <i class="fas fa-phone"></i>
+                            <span>تماس</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy;  کافه ماموت. طراحی شده توسط <a href="https://www.instagram.com/ali_mtd_7/">alimtd</a>
+.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
